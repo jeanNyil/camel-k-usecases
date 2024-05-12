@@ -13,5 +13,4 @@ kamel run xml-to-json-mqtt.camel.yaml \
 --trait health.readiness-probe-enabled=true \
 --trait prometheus.enabled=true \
 --trait tracing.enabled=true \
---trait tracing.endpoint=http://jaeger-es-collector.observability.svc:14268/api/traces \
---dependency camel:paho-mqtt5
+--trait tracing.endpoint=http://jaeger-es-collector.observability.svc:14268/api/traces
