@@ -1,0 +1,60 @@
+- route:
+    id: mqtt-ok-route
+    from:
+      id: from-3680
+      uri: paho-mqtt5:IPS/IN/RONDO/DOCURL
+      parameters:
+        brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
+          .apps.ocp4.jnyilimb.eu:443}}"
+        httpsHostnameVerificationEnabled: false
+        password: "{{broker.password:P@ssw0rd}}"
+        userName: "{{broker.user:mqtt-to-log}}"
+      steps:
+        - to:
+            id: to-3986
+            uri: kamelet:log-sink
+            parameters:
+              multiline: true
+              showAllProperties: true
+              showHeaders: true
+              showProperties: true
+- route:
+    id: mqtt-ko-route
+    from:
+      id: from-2529
+      uri: paho-mqtt5:IPS/IN/CREJOB/RONDO
+      parameters:
+        brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
+          .apps.ocp4.jnyilimb.eu:443}}"
+        httpsHostnameVerificationEnabled: false
+        password: "{{broker.password:P@ssw0rd}}"
+        userName: "{{broker.user:mqtt-to-log}}"
+      steps:
+        - to:
+            id: to-3344
+            uri: kamelet:log-sink
+            parameters:
+              multiline: true
+              showAllProperties: true
+              showHeaders: true
+              showProperties: true
+- route:
+    id: mqtt-xmljson-route
+    from:
+      id: from-2568
+      uri: paho-mqtt5:SMRS/RETURN/CREJOB/BoostLocker
+      parameters:
+        brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
+          .apps.ocp4.jnyilimb.eu:443}}"
+        httpsHostnameVerificationEnabled: false
+        password: "{{broker.password:P@ssw0rd}}"
+        userName: "{{broker.user:mqtt-to-log}}"
+      steps:
+        - to:
+            id: to-1954
+            uri: kamelet:log-sink
+            parameters:
+              multiline: true
+              showAllProperties: true
+              showHeaders: true
+              showProperties: true

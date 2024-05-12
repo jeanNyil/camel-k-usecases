@@ -1,0 +1,167 @@
+- route:
+    id: csv-splitter-route
+    from:
+      id: from-4205
+      uri: minio:camel-k-integrations-csv
+      parameters:
+        accessKey: "{{minio.access-key:minioadmin}}"
+        endpoint: "{{minio.endpoint:minio.apps.ocp4.jnyilimb.eu}}"
+        objectName: ""
+        secretKey: "{{minio.secret-key:zuf+tfteSlswRu7BJ86wekitnifILbZam1KYY3TG}}"
+        secure: true
+      steps:
+        - to:
+            id: to-1524
+            uri: log:csv
+            parameters:
+              multiline: true
+              showAll: true
+              showAllProperties: true
+              showHeaders: true
+              showProperties: true
+        - unmarshal:
+            id: unmarshal-csv
+            csv:
+              delimiter: ;
+              ignoreHeaderCase: true
+              trim: true
+              useMaps: true
+        - to:
+            id: to-Exchange
+            uri: log:unmarshal
+            parameters:
+              multiline: true
+              showAll: true
+              showAllProperties: true
+              showHeaders: true
+              showProperties: true
+        - split:
+            id: split-csv
+            expression:
+              simple:
+                expression: ${body}
+        - log:
+            id: log-1488
+            message: "${routeId} >>> Processing record [Id:
+              ${body[Nummer]}/${body[Subnummer]},  Costcenter:
+              ${body[Standort]}, Status: ${body[Status]}]"
+        - choice:
+            id: choice-2440
+            otherwise:
+              id: otherwise-7350
+              steps:
+                - to:
+                    id: to-1265
+                    uri: direct:csvToJsonKO
+                    parameters: {}
+                - setHeader:
+                    id: setHeader-5847
+                    expression:
+                      constant:
+                        expression: IPS/IN/CREJOB/RONDO
+                        trim: true
+                    name: CamelPahoMqtt5OverrideTopic
+            when:
+              - id: when-9549
+                steps:
+                  - to:
+                      id: to-1021
+                      uri: direct:csvToJsonOK
+                      parameters: {}
+                  - setHeader:
+                      id: setHeader-2100
+                      expression:
+                        constant:
+                          expression: IPS/IN/RONDO/DOCURL
+                          trim: true
+                      name: CamelPahoMqtt5OverrideTopic
+                expression:
+                  simple:
+                    expression: ${body[Status]} == "OK"
+        - log:
+            id: log-3225
+            message: ${routeId} >>> Publishing to ${header.CamelPahoMqtt5OverrideTopic} MQTT
+              Topic
+        - to:
+            id: to-2503
+            uri: paho-mqtt5:dummy
+            parameters:
+              brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
+                .apps.ocp4.jnyilimb.eu:443}}"
+              httpsHostnameVerificationEnabled: false
+              password: "{{broker.password:P@ssw0rd}}"
+              userName: "{{broker.user:csv-to-json-mqtt}}"
+            pattern: InOnly
+- route:
+    id: csv-to-json-ok-route
+    from:
+      id: from-csvToJsonOK
+      uri: direct:csvToJsonOK
+      parameters: {}
+      steps:
+        - transform:
+            id: transform-3051
+            expression:
+              simple:
+                expression: >-
+                  {
+                      "RETURN": "RONDO/RETURN/DOCURL/${body[Nummer]}/${body[Subnummer]}",
+                      "Nummer": "${body[Nummer]}/${body[Subnummer]}",
+                      "INVENTORY_NAME": "${body[Ident]}",
+                      "COSTCENTER": "${body[Standort]}",
+                      "Gebaeude": "${body[Gebaeude]}",
+                      "INVENTORY_NUMBER": "${body[Fabriknummer]}",
+                      "Geprueft": "${body[Geprueft]}",
+                      "Faellig": "${body[Faellig]}",
+                      "RCD-Faellig": "${body[RCD-Faellig]}",
+                      "TST-Faellig": "${body[TST-Faellig]}",
+                      "Status": "${body[Status]}",
+                      "Bewertung": "${body[Bewertung]}",
+                      "WORKGROUP": "${body[Fachgruppe]}",
+                      "Link": "${body[Link]}",
+                      "PLANT": "M",
+                      "REQUESTOR": "ROnDo"
+                  }
+                trim: true
+        - removeHeaders:
+            id: removeHeaders-3651
+            pattern: "*"
+        - log:
+            id: log-4108
+            message: "${routeId} >>> Generated JSON: ${body}"
+- route:
+    id: csv-to-json-ko-route
+    from:
+      id: from-csvToJsonKO
+      uri: direct:csvToJsonKO
+      parameters: {}
+      steps:
+        - transform:
+            id: transform-2959
+            expression:
+              simple:
+                expression: >-
+                  {
+                      "RETURN": "RONDO/RETURN/CREJOB/${body[Nummer]}/${body[Subnummer]}",
+                      "COSTCENTER": "${body[Standort]}",
+                      "REQUESTOR": "RONDO",
+                      "JOBTEXT": "Reparatur ${body[Ident]} nach fehlerhafter Pruefung am ${body[Geprueft]}",
+                      "POSTEXT": "Reparatur ${body[Ident]} nach fehlerhafter Pruefung am ${body[Geprueft]}: Status: ${body[Status]}, Bewertung: ${body[Bewertung]}, URL: ${body[Link]}",
+                      "ACCOUNT": "${body[Standort]}",
+                      "COSTTYPE": "10",
+                      "COSTCATEGORY": "02",
+                      "WORKGROUP": "${body[Fachgruppe]}",
+                      "INVENTORY_NUMBER": "${body[Fabriknummer]}",
+                      "INVENTORY_NAME": "${body[Ident]}",
+                      "JOBSTART": "",
+                      "STATUS": "EROF",
+                      "PLANT": "M",
+                      "ORDER_TYPE": "004"
+                  }
+                trim: true
+        - removeHeaders:
+            id: removeHeaders-4269
+            pattern: "*"
+        - log:
+            id: log-1685
+            message: "${routeId} >>> Generated JSON: ${body}"

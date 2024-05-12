@@ -1,0 +1,24 @@
+schemaVersion: 2.2.2
+metadata:
+  name: demo-project
+components:
+  - name: tools
+    container:
+      image: quay.io/jnyilimbibi/devspaces-extended-udi:3.12g
+      env:
+        - name: MAVEN_URL
+          value: https://nexus.apps.ocp4.jnyilimb.eu/repository/maven-public/
+      memoryRequest: 1Gi
+      memoryLimit: 4Gi
+      cpuLimit: 4000m
+      cpuRequest: 1000m
+commands:
+  - id: install-camel-cli
+    exec:
+      label: "Install Apache Camel JBang"
+      component: tools
+      workingDir: ${PROJECT_SOURCE}
+      commandLine: "jbang trust add -o https://github.com/apache && jbang app install --verbose --fresh --name=camel /home/user/CamelJBang.java"
+events:
+  postStart:
+    - install-camel-cli
