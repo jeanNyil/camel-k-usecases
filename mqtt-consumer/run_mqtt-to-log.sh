@@ -3,7 +3,7 @@
 # Deploy config secret
 oc apply -f ./openshift/mqtt-to-log-secret.yaml
 
-# Run integration
+# Deploy Camel-K integration
 kamel run mqtt-to-log.camel.yaml \
 --config secret:mqtt-to-log-secret \
 --trait health.enabled=true \

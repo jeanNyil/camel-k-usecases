@@ -3,7 +3,7 @@
 # Deploy config secret
 oc apply -f ./openshift/csv-to-json-mqtt-secret.yaml
 
-# Run integration
+# Deploy Camel-K integration
 kamel run csv-to-json-mqtt.camel.yaml \
 --config secret:csv-to-json-mqtt-secret \
 --trait health.enabled=true \

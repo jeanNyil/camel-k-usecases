@@ -3,7 +3,7 @@
 # Deploy config secret
 oc apply -f ./openshift/xml-to-json-mqtt-secret.yaml
 
-# Run integration
+# Deploy Camel-K integration
 kamel run xml-to-json-mqtt.camel.yaml \
 --resource file:xml-to-textblock.xslt \
 --resource file:xml-to-json.xslt \
