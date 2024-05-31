@@ -1,6 +1,6 @@
 schemaVersion: 2.2.2
 metadata:
-  name: demo-project
+  name: camel-k-usecases
 components:
   - name: tools
     container:
