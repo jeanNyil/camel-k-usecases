@@ -55,8 +55,8 @@
               dataSource: "#PostgresqlDataSource"
         - log:
             id: log-3610
-            message: Record [${header.CamelBatchIndex}] processing DONE. Record has been
-              removed from DB.
+            message: Record [${header.CamelBatchIndex}] processing DONE. Record
+              [${header.CamelBatchIndex}] has been removed from DB.
 - beans:
     - name: PostgresqlDataSource
       properties:
