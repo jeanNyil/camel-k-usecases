@@ -35,7 +35,7 @@
                 trim: true
         - log:
             id: log-1967
-            message: Generated JSON for record [${header.CamelBatchIndex}] => ${body}
+            message: Generated JSON for record [${header.id}] => ${body}
         - multicast:
             id: multicast-2720
             steps:
@@ -55,8 +55,8 @@
               dataSource: "#PostgresqlDataSource"
         - log:
             id: log-3610
-            message: Record [${header.CamelBatchIndex}] processing DONE. Record
-              [${header.CamelBatchIndex}] has been removed from DB.
+            message: Record [${header.id}] processing DONE. Record
+              [${header.id}] has been removed from DB.
 - beans:
     - name: PostgresqlDataSource
       properties:
@@ -82,7 +82,7 @@
             name: CamelFileName
         - log:
             id: log-7632
-            message: Writing record [${header.CamelBatchIndex}] to ${header.CamelFileName}
+            message: Writing record [${header.id}] to ${header.CamelFileName}
               file
         - to:
             id: to-1148
@@ -97,7 +97,7 @@
       steps:
         - log:
             id: log-7320
-            message: Publishing record [${header.CamelBatchIndex}] to DB/JSON MQTT topic
+            message: Publishing record [${header.id}] to DB/JSON MQTT topic
         - to:
             id: to-1474
             uri: paho-mqtt5:DB/JSON
