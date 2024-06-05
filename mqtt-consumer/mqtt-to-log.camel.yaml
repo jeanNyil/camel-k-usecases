@@ -58,3 +58,23 @@
               showAllProperties: true
               showHeaders: true
               showProperties: true
+- route:
+    id: mqtt-dbusecase-route
+    from:
+      id: from-2516
+      uri: paho-mqtt5:DB/JSON
+      parameters:
+        brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
+          .apps.ocp4.jnyilimb.eu:443}}"
+        httpsHostnameVerificationEnabled: false
+        password: "{{broker.password:P@ssw0rd}}"
+        userName: "{{broker.user:mqtt-to-log}}"
+      steps:
+        - to:
+            id: to-1357
+            uri: kamelet:log-sink
+            parameters:
+              multiline: true
+              showAllProperties: true
+              showHeaders: true
+              showProperties: true
