@@ -2,6 +2,7 @@
     id: mqtt-ok-route
     from:
       id: from-3680
+      description: IPS/IN/RONDO/DOCURL
       uri: paho-mqtt5:IPS/IN/RONDO/DOCURL
       parameters:
         brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
@@ -22,6 +23,7 @@
     id: mqtt-ko-route
     from:
       id: from-2529
+      description: IPS/IN/CREJOB/RONDO
       uri: paho-mqtt5:IPS/IN/CREJOB/RONDO
       parameters:
         brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
@@ -42,6 +44,7 @@
     id: mqtt-xmljson-route
     from:
       id: from-2568
+      description: SMRS/RETURN/CREJOB/BoostLocker
       uri: paho-mqtt5:SMRS/RETURN/CREJOB/BoostLocker
       parameters:
         brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
@@ -62,6 +65,7 @@
     id: mqtt-dbusecase-route
     from:
       id: from-2516
+      description: DB/JSON
       uri: paho-mqtt5:DB/JSON
       parameters:
         brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
