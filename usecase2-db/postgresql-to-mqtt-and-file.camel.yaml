@@ -1,8 +1,9 @@
 # camel-k: language=yaml dependency=mvn:org.postgresql:postgresql:42.7.3
 - route:
-    id: sql-to-mqtt-and-file-route
+    id: sql-to-mqtt-and-file
     from:
       id: from-1352
+      description: Fetch transactions
       uri: sql:SELECT * FROM transactions
       parameters:
         dataSource: "#PostgresqlDataSource"
@@ -21,12 +22,14 @@
               showProperties: true
         - setHeader:
             id: setHeader-3753
+            description: Extract Id
             expression:
               simple:
                 expression: ${body[id]}
             name: id
         - transform:
             id: transform-1804
+            description: Generate JSON
             expression:
               simple:
                 expression: '{ "id": ${body[id]}, "timestamp": "${body[timestamp]}",
@@ -41,22 +44,25 @@
             steps:
               - to:
                   id: to-7135
+                  description: Call write-to-file
                   uri: direct:write-to-file
                   parameters: {}
               - to:
                   id: to-4552
+                  description: Call write-to-mqtt
                   uri: direct:write-to-mqtt
                   parameters: {}
             parallelProcessing: true
         - to:
             id: to-1624
+            description: Delete record
             uri: sql:delete from transactions where id = :#${header.id}
             parameters:
               dataSource: "#PostgresqlDataSource"
         - log:
             id: log-3610
-            message: Record [${header.id}] processing DONE. Record
-              [${header.id}] has been removed from DB.
+            message: Record [${header.id}] processing DONE. Record [${header.id}] has been
+              removed from DB.
 - beans:
     - name: PostgresqlDataSource
       properties:
@@ -67,14 +73,16 @@
         user: "{{db.user:postgres}}"
       type: org.postgresql.ds.PGSimpleDataSource
 - route:
-    id: write-to-file-route
+    id: write-to-file
     from:
       id: from-2488
+      description: write-to-file
       uri: direct:write-to-file
       parameters: {}
       steps:
         - setHeader:
             id: setHeader-4078
+            description: Generate filename
             expression:
               simple:
                 expression: ${header.id}_${date:now:yyyyMMddHHmm}.json
@@ -82,16 +90,16 @@
             name: CamelFileName
         - log:
             id: log-7632
-            message: Writing record [${header.id}] to ${header.CamelFileName}
-              file
+            message: Writing record [${header.id}] to ${header.CamelFileName} file
         - to:
             id: to-1148
             uri: file:/tmp/db-usecase
             parameters: {}
 - route:
-    id: publish-to-mqtt-route
+    id: publish-to-mqtt
     from:
       id: from-1057
+      description: write-to-mqtt
       uri: direct:write-to-mqtt
       parameters: {}
       steps:

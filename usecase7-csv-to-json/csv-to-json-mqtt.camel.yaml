@@ -1,5 +1,5 @@
 - route:
-    id: csv-splitter-route
+    id: csv-splitter
     from:
       id: from-4205
       uri: minio:camel-k-integrations-csv
@@ -12,6 +12,7 @@
       steps:
         - to:
             id: to-1524
+            description: Log CSV
             uri: log:csv
             parameters:
               multiline: true
@@ -21,6 +22,7 @@
               showProperties: true
         - unmarshal:
             id: unmarshal-csv
+            description: CSV to List<Map>
             csv:
               delimiter: ;
               ignoreHeaderCase: true
@@ -28,6 +30,7 @@
               useMaps: true
         - to:
             id: to-Exchange
+            description: Log List<Map>
             uri: log:unmarshal
             parameters:
               multiline: true
@@ -52,10 +55,12 @@
               steps:
                 - to:
                     id: to-1265
+                    description: Call csv-to-json-ko
                     uri: direct:csvToJsonKO
                     parameters: {}
                 - setHeader:
                     id: setHeader-5847
+                    description: CREJOB topic
                     expression:
                       constant:
                         expression: IPS/IN/CREJOB/RONDO
@@ -63,13 +68,16 @@
                     name: CamelPahoMqtt5OverrideTopic
             when:
               - id: when-9549
+                description: Status == OK
                 steps:
                   - to:
                       id: to-1021
+                      description: Call csv-to-json-ok
                       uri: direct:csvToJsonOK
                       parameters: {}
                   - setHeader:
                       id: setHeader-2100
+                      description: RONDO topic
                       expression:
                         constant:
                           expression: IPS/IN/RONDO/DOCURL
@@ -93,14 +101,16 @@
               userName: "{{broker.user:csv-to-json-mqtt}}"
             pattern: InOnly
 - route:
-    id: csv-to-json-ok-route
+    id: csv-to-json-ok
     from:
       id: from-csvToJsonOK
+      description: csvToJsonOK
       uri: direct:csvToJsonOK
       parameters: {}
       steps:
         - transform:
             id: transform-3051
+            description: Generate JSON
             expression:
               simple:
                 expression: >-
@@ -128,16 +138,19 @@
             pattern: "*"
         - log:
             id: log-4108
+            description: Log JSON
             message: "${routeId} >>> Generated JSON: ${body}"
 - route:
-    id: csv-to-json-ko-route
+    id: csv-to-json-ko
     from:
       id: from-csvToJsonKO
+      description: csvToJsonKO
       uri: direct:csvToJsonKO
       parameters: {}
       steps:
         - transform:
             id: transform-2959
+            description: Generate JSON
             expression:
               simple:
                 expression: >-
@@ -164,4 +177,5 @@
             pattern: "*"
         - log:
             id: log-1685
+            description: Log JSON
             message: "${routeId} >>> Generated JSON: ${body}"
