@@ -5,8 +5,8 @@ components:
   - name: tools
     container:
       image: quay.io/jnyilimbibi/devspaces-extended-udi:3.14
-      memoryRequest: 2Gi
-      memoryLimit: 6Gi
+      memoryRequest: 1Gi
+      memoryLimit: 4Gi
       cpuLimit: 4000m
       cpuRequest: 1000m
 commands:
