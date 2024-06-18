@@ -13,4 +13,5 @@ INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('20
 INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('2021-01-02T00:00:00', '2873628736', 120.0);
 INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('2021-01-03T00:00:00', '12922878', 320.0);
 INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('2021-01-04T00:00:00', '12898878', 400.0);
-INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('2021-01-05T00:00:00', '12898879', 300.0);
+INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('2021-01-05T00:00:00', '12898898', 300.0);
+INSERT INTO public.transactions ("timestamp", accountnumber, amount) VALUES ('2021-01-15T00:00:00', '12898324', 350.0);
