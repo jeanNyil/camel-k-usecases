@@ -21,12 +21,12 @@
               showHeaders: true
               showProperties: true
         - setProperty:
-            id: setProperty-2413
-            description: Save XML
-            expression:
-              simple:
-                expression: ${body}
-            name: inputXml
+                  id: setProperty-2413
+                  description: Save XML
+                  expression:
+                    simple:
+                      expression: ${body}
+                  name: inputXml
         - setHeader:
             id: setHeader-4160
             description: Save Filename
@@ -34,43 +34,55 @@
               simple:
                 expression: ${header.CamelMinioObjectName}
             name: filename
-        - to:
-            id: to-3356
-            description: Generate TEXTBLOC
-            uri: xslt:xml-to-textblock.xslt
-            parameters: {}
-        - log:
-            id: log-3400
-            message: "${routeId} >>> Generated textblock: ${body}"
-        - setHeader:
-            id: setHeader-1851
-            description: Save TEXTBLOC
-            expression:
-              simple:
-                expression: ${body}
-            name: textblock
-        - setBody:
-            id: setBody-4922
-            description: Retrieve XML
-            expression:
-              simple:
-                expression: ${exchangeProperty.inputXml}
-        - to:
-            id: to-2701
-            description: Generate JSON
-            uri: xslt:xml-to-json.xslt
-            parameters: {}
-        - log:
-            id: log-2473
-            message: "${routeId} >>> Generated JSON: ${body}. Publishing to
-              SMRS/RETURN/CREJOB/BoostLocker MQTT Topic"
-        - to:
-            id: to-2503
-            uri: paho-mqtt5:SMRS/RETURN/CREJOB/BoostLocker
-            parameters:
-              brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
-                .apps.ocp4.jnyilimb.eu:443}}"
-              httpsHostnameVerificationEnabled: false
-              password: "{{broker.password:P@ssw0rd}}"
-              userName: "{{broker.user:xml-to-json-mqtt}}"
-            pattern: InOnly
+        - doTry:
+            id: doTry-1639
+            steps:
+              - to:
+                  id: to-3356
+                  description: Generate TEXTBLOC
+                  uri: xslt:xml-to-textblock.xslt
+                  parameters: {}
+              - log:
+                  id: log-3400
+                  message: "${routeId} >>> Generated textblock: ${body}"
+              - setHeader:
+                  id: setHeader-1851
+                  description: Save TEXTBLOC
+                  expression:
+                    simple:
+                      expression: ${body}
+                  name: textblock
+              - setBody:
+                  id: setBody-4922
+                  description: Retrieve XML
+                  expression:
+                    simple:
+                      expression: ${exchangeProperty.inputXml}
+              - to:
+                  id: to-2701
+                  description: Generate JSON
+                  uri: xslt:xml-to-json.xslt
+                  parameters: {}
+              - log:
+                  id: log-2473
+                  message: "${routeId} >>> Generated JSON: ${body}. Publishing to
+                    SMRS/RETURN/CREJOB/BoostLocker MQTT Topic"
+              - to:
+                  id: to-2503
+                  uri: paho-mqtt5:SMRS/RETURN/CREJOB/BoostLocker
+                  parameters:
+                    brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
+                      .apps.ocp4.jnyilimb.eu:443}}"
+                    httpsHostnameVerificationEnabled: false
+                    password: "{{broker.password:P@ssw0rd}}"
+                    userName: "{{broker.user:xml-to-json-mqtt}}"
+                  pattern: InOnly
+            doCatch:
+              - id: doCatch-3904
+                steps:
+                  - log:
+                      id: log-1899
+                      description: Log Exception
+                      message: "Caught error: ${exception.message}"
+                exception:
+                  - java.lang.Exception
