@@ -16,6 +16,10 @@ kamel run csv-to-json-mqtt.camel.yaml \
 --trait jolokia.use-ssl-client-authentication=true \
 --trait jolokia.ca-cert=/var/run/secrets/kubernetes.io/serviceaccount/service-ca.crt \
 --trait jolokia.client-principal=cn=hawtio-online.hawtio.svc \
+--trait container.request-cpu=10m \
+--trait container.request-memory=256Mi \
+--trait container.limit-cpu=500m \
+--trait container.limit-memory=256Mi \
 --trait tracing.enabled=true \
 --trait tracing.endpoint=http://jaeger-es-collector.observability.svc:14268/api/traces \
 --dependency camel:csv

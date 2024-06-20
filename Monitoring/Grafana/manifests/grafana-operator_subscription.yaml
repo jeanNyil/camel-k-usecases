@@ -18,4 +18,4 @@ spec:
   installPlanApproval: Automatic
   name: grafana-operator
   source: community-operators
-  sourceNamespace: openshift-marketplace 
+  sourceNamespace: openshift-marketplace
