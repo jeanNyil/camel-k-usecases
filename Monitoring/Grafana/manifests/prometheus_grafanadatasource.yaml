@@ -18,7 +18,6 @@ spec:
         <token_change_me>
     type: prometheus
     url: https://thanos-querier.openshift-monitoring.svc:9091
-    uid: a35335fe-c6bb-4376-bf9c-7a3021271924
   instanceSelector:
     matchLabels:
       dashboards: camel-grafana

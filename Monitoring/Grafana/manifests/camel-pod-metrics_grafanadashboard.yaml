@@ -32,7 +32,7 @@ spec:
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
-      "id": 8,
+      "id": 9,
       "links": [],
       "panels": [
         {
@@ -550,7 +550,7 @@ spec:
           },
           "gridPos": {
             "h": 6,
-            "w": 19,
+            "w": 12,
             "x": 4,
             "y": 7
           },
@@ -563,7 +563,7 @@ spec:
               "showLegend": true
             },
             "tooltip": {
-              "mode": "single",
+              "mode": "multi",
               "sort": "none"
             }
           },
@@ -623,6 +623,100 @@ spec:
             }
           ],
           "title": "Pod Memory Usage",
+          "type": "timeseries"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "mode": "palette-classic"
+              },
+              "custom": {
+                "axisBorderShow": false,
+                "axisCenteredZero": false,
+                "axisColorMode": "text",
+                "axisLabel": "",
+                "axisPlacement": "auto",
+                "barAlignment": 0,
+                "drawStyle": "line",
+                "fillOpacity": 10,
+                "gradientMode": "none",
+                "hideFrom": {
+                  "legend": false,
+                  "tooltip": false,
+                  "viz": false
+                },
+                "insertNulls": false,
+                "lineInterpolation": "linear",
+                "lineWidth": 1,
+                "pointSize": 5,
+                "scaleDistribution": {
+                  "type": "linear"
+                },
+                "showPoints": "never",
+                "spanNulls": false,
+                "stacking": {
+                  "group": "A",
+                  "mode": "none"
+                },
+                "thresholdsStyle": {
+                  "mode": "off"
+                }
+              },
+              "mappings": [],
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 7,
+            "x": 16,
+            "y": 7
+          },
+          "id": 27,
+          "options": {
+            "legend": {
+              "calcs": [],
+              "displayMode": "list",
+              "placement": "bottom",
+              "showLegend": true
+            },
+            "tooltip": {
+              "mode": "multi",
+              "sort": "none"
+            }
+          },
+          "pluginVersion": "10.4.3",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "sum(increase(base_gc_total{job=\"$job\", pod=\"$pod\"}[30m]))",
+              "format": "time_series",
+              "interval": "",
+              "intervalFactor": 1,
+              "legendFormat": "Number of GC Collections",
+              "range": true,
+              "refId": "A"
+            }
+          ],
+          "title": "Number of GC Collections [30m]",
           "type": "timeseries"
         },
         {
@@ -902,7 +996,7 @@ spec:
         },
         {
           "datasource": "Prometheus",
-          "description": "Camel Exchanges per minute",
+          "description": "Camel Exchanges per second",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -959,7 +1053,7 @@ spec:
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 6,
             "w": 11,
             "x": 0,
             "y": 19
@@ -982,37 +1076,37 @@ spec:
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(increase(application_camel_context_exchanges_completed_total{pod=\"$pod\"}[1m]))",
+              "expr": "rate(application_camel_context_exchanges_completed_total{job=\"$job\", pod=\"$pod\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Exchanges Completed / 1m",
+              "legendFormat": "Exchanges Completed / 1sec",
               "range": true,
               "refId": "A"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(increase(application_camel_context_exchanges_failed_total{pod=\"$pod\"}[1m]))",
+              "expr": "rate(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Exchanges Failed / 1m",
+              "legendFormat": "Exchanges Failed / 1sec",
               "range": true,
               "refId": "B"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(increase(application_camel_context_exchanges_total{pod=\"$pod\"}[1m]))",
+              "expr": "rate(application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Exchanges Total / 1m",
+              "legendFormat": "Exchanges Total / 1sec",
               "range": true,
               "refId": "C"
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(application_camel_context_exchanges_inflight_count{pod=\"$pod\"})",
+              "expr": "sum(application_camel_context_exchanges_inflight_count{job=\"$job\", pod=\"$pod\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Exchanges Inflight",
@@ -1020,12 +1114,12 @@ spec:
               "refId": "D"
             }
           ],
-          "title": "Camel Exchanges / 1m",
+          "title": "Camel Exchanges / 1sec",
           "type": "timeseries"
         },
         {
           "datasource": "Prometheus",
-          "description": "Camel Processing Time in seconds",
+          "description": "Camel Processing Time",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1077,12 +1171,12 @@ spec:
                   }
                 ]
               },
-              "unit": "short"
+              "unit": "s"
             },
             "overrides": []
           },
           "gridPos": {
-            "h": 8,
+            "h": 6,
             "w": 12,
             "x": 11,
             "y": 19
@@ -1133,7 +1227,7 @@ spec:
               "refId": "E"
             }
           ],
-          "title": "Camel Processing Time in seconds",
+          "title": "Camel Processing Time",
           "type": "timeseries"
         },
         {
@@ -1169,10 +1263,10 @@ spec:
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
+            "h": 6,
             "w": 5,
             "x": 0,
-            "y": 27
+            "y": 25
           },
           "id": 20,
           "options": {
@@ -1269,10 +1363,10 @@ spec:
             "overrides": []
           },
           "gridPos": {
-            "h": 7,
+            "h": 6,
             "w": 18,
             "x": 5,
-            "y": 27
+            "y": 25
           },
           "id": 14,
           "options": {
@@ -1327,14 +1421,11 @@ spec:
         "list": [
           {
             "current": {
-              "selected": false,
-              "text": "camel-k-integrations/postgresql-to-mqtt-and-file",
-              "value": "camel-k-integrations/postgresql-to-mqtt-and-file"
+              "selected": true,
+              "text": "camel-k-integrations/mqtt-to-log",
+              "value": "camel-k-integrations/mqtt-to-log"
             },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "a35335fe-c6bb-4376-bf9c-7a3021271924"
-            },
+            "datasource": "${DS_PROMETHEUS}",
             "definition": "label_values(application_camel_context_exchanges_total,job)",
             "hide": 0,
             "includeAll": false,
@@ -1356,16 +1447,13 @@ spec:
             "current": {
               "selected": true,
               "text": [
-                "postgresql-to-mqtt-and-file-77597b4cd5-d9wj9"
+                "mqtt-to-log-5d89bbff49-pbg4b"
               ],
               "value": [
-                "postgresql-to-mqtt-and-file-77597b4cd5-d9wj9"
+                "mqtt-to-log-5d89bbff49-pbg4b"
               ]
             },
-            "datasource": {
-              "type": "prometheus",
-              "uid": "a35335fe-c6bb-4376-bf9c-7a3021271924"
-            },
+            "datasource": "${DS_PROMETHEUS}",
             "definition": "label_values(application_camel_route_exchanges_total{job=\"$job\"},pod)",
             "hide": 0,
             "includeAll": false,
@@ -1390,7 +1478,7 @@ spec:
         ]
       },
       "time": {
-        "from": "now-30m",
+        "from": "now-3h",
         "to": "now"
       },
       "timepicker": {
@@ -1421,6 +1509,6 @@ spec:
       "timezone": "",
       "title": "Camel Pod Metrics",
       "uid": "bIx0BxeZk",
-      "version": 1,
+      "version": 3,
       "weekStart": ""
     }

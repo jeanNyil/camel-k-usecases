@@ -36,7 +36,7 @@ spec:
             "panels": [
                 {
                     "collapsed": false,
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "gridPos": {
                         "h": 1,
                         "w": 24,
@@ -49,7 +49,7 @@ spec:
                     "repeatDirection": "h",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "refId": "A"
                         }
                     ],
@@ -57,7 +57,7 @@ spec:
                     "type": "row"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -118,7 +118,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "disableTextWrap": false,
                             "editorMode": "code",
                             "expr": "rate(application_camel_route_exchanges_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}[5m])",
@@ -135,7 +135,7 @@ spec:
                     "type": "stat"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -185,9 +185,9 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
-                            "expr": "application_camel_route_exchanges_inflight_count{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
+                            "expr": "sum(application_camel_route_exchanges_inflight_count{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"})",
                             "format": "time_series",
                             "instant": true,
                             "intervalFactor": 1,
@@ -198,7 +198,7 @@ spec:
                     "type": "stat"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -264,7 +264,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "(sum(application_camel_route_exchanges_failed_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"})*100) / sum(application_camel_route_exchanges_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"})",
                             "format": "time_series",
@@ -278,7 +278,7 @@ spec:
                     "type": "gauge"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -339,7 +339,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "application_camel_route_processing_min_seconds{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
                             "format": "time_series",
@@ -352,7 +352,7 @@ spec:
                     "type": "stat"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -413,7 +413,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "application_camel_route_processing_mean_seconds{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
                             "format": "time_series",
@@ -426,7 +426,7 @@ spec:
                     "type": "stat"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -487,7 +487,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "application_camel_route_processing_max_seconds{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
                             "format": "time_series",
@@ -500,7 +500,7 @@ spec:
                     "type": "stat"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -580,7 +580,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "rate(application_camel_route_exchanges_failed_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}[5m])",
                             "format": "time_series",
@@ -590,7 +590,7 @@ spec:
                             "refId": "B"
                         },
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "rate(application_camel_route_exchanges_completed_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}[5m])",
                             "format": "time_series",
@@ -606,7 +606,7 @@ spec:
                     "type": "timeseries"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -686,21 +686,25 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
+                            "disableTextWrap": false,
                             "editorMode": "code",
-                            "expr": "application_camel_route_exchanges_inflight_count{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
+                            "expr": "sum(application_camel_route_exchanges_inflight_count{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"})",
                             "format": "time_series",
+                            "fullMetaSearch": false,
+                            "includeNullMetadata": true,
                             "intervalFactor": 1,
                             "legendFormat": "Exchanges inflight",
                             "range": true,
-                            "refId": "A"
+                            "refId": "A",
+                            "useBackend": false
                         }
                     ],
                     "title": "Exchanges inflight",
                     "type": "timeseries"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -780,7 +784,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "application_camel_route_processing_max_seconds{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
                             "format": "time_series",
@@ -790,7 +794,7 @@ spec:
                             "refId": "A"
                         },
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "exemplar": false,
                             "expr": "application_camel_route_processing_mean_seconds{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
@@ -802,7 +806,7 @@ spec:
                             "refId": "B"
                         },
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "application_camel_route_processing_min_seconds{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}",
                             "format": "time_series",
@@ -816,7 +820,7 @@ spec:
                     "type": "timeseries"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -896,7 +900,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "rate(application_camel_route_failuresHandled_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}[5m])",
                             "format": "time_series",
@@ -909,7 +913,7 @@ spec:
                     "type": "timeseries"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -989,7 +993,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "disableTextWrap": false,
                             "editorMode": "code",
                             "expr": "rate(application_camel_route_exchanges_failed_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}[5m])",
@@ -1006,7 +1010,7 @@ spec:
                     "type": "timeseries"
                 },
                 {
-                    "datasource": "${DS_PROMETHEUS}",
+                    "datasource": "Prometheus",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -1086,7 +1090,7 @@ spec:
                     "pluginVersion": "10.4.3",
                     "targets": [
                         {
-                            "datasource": "${DS_PROMETHEUS}",
+                            "datasource": "Prometheus",
                             "editorMode": "code",
                             "expr": "rate(application_camel_route_externalRedeliveries_total{job=\"$job\", pod=\"$pod\", routeId=\"$routeId\"}[5m])",
                             "format": "time_series",
@@ -1109,8 +1113,8 @@ spec:
                     {
                         "current": {
                             "selected": false,
-                            "text": "camel-k-integrations/csv-to-json-mqtt",
-                            "value": "camel-k-integrations/csv-to-json-mqtt"
+                            "text": "camel-k-integrations/postgresql-to-mqtt-and-file",
+                            "value": "camel-k-integrations/postgresql-to-mqtt-and-file"
                         },
                         "datasource": "${DS_PROMETHEUS}",
                         "definition": "label_values(application_camel_context_exchanges_total,job)",
@@ -1133,8 +1137,8 @@ spec:
                     {
                         "current": {
                             "selected": false,
-                            "text": "csv-to-json-mqtt-64b6c76868-4lc6l",
-                            "value": "csv-to-json-mqtt-64b6c76868-4lc6l"
+                            "text": "postgresql-to-mqtt-and-file-77597b4cd5-d9wj9",
+                            "value": "postgresql-to-mqtt-and-file-77597b4cd5-d9wj9"
                         },
                         "datasource": "${DS_PROMETHEUS}",
                         "definition": "label_values(application_camel_route_exchanges_total{job=\"$job\"},pod)",
@@ -1158,10 +1162,14 @@ spec:
                         "current": {
                             "selected": true,
                             "text": [
-                                "csv-splitter"
+                                "publish-to-mqtt",
+                                "sql-to-mqtt-and-file",
+                                "write-to-file"
                             ],
                             "value": [
-                                "csv-splitter"
+                                "publish-to-mqtt",
+                                "sql-to-mqtt-and-file",
+                                "write-to-file"
                             ]
                         },
                         "datasource": "${DS_PROMETHEUS}",
@@ -1186,7 +1194,7 @@ spec:
                 ]
             },
             "time": {
-                "from": "now-6h",
+                "from": "now-30m",
                 "to": "now"
             },
             "timepicker": {
