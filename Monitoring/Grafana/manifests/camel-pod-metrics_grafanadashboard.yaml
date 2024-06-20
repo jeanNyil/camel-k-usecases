@@ -871,7 +871,7 @@ spec:
               "fullMetaSearch": false,
               "includeNullMetadata": true,
               "instant": false,
-              "legendFormat": "CPU Usage",
+              "legendFormat": "CPU Usage %",
               "range": true,
               "refId": "A",
               "useBackend": false
