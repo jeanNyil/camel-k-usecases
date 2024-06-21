@@ -64,7 +64,7 @@ spec:
     users:
       auto_assign_org: 'true'
       auto_assign_org_id: '1'
-      auto_assign_org_role: Viewer
+      auto_assign_org_role: Admin
     auth.proxy:
       enable_login_token: 'true'
       enabled: 'true'
