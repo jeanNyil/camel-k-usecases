@@ -11,4 +11,4 @@ oc apply -f ./manifests/prometheus_grafanadatasource.yaml
 
 # Deploy the Camel Grafana Dashaboards
 oc apply -f ./manifests/camel-route-metrics_grafanadashboard.yaml
-oc apply -f ./manifests/camel-pod-metrics_grafanadashboard.yaml
+oc apply -f ./manifests/camel-integration-metrics_grafanadashboard.yaml

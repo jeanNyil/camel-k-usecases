@@ -1,7 +1,7 @@
 kind: GrafanaDashboard
 apiVersion: grafana.integreatly.org/v1beta1
 metadata:
-  name: camel-pod-metrics
+  name: camel-integration-metrics
 spec:
   datasources:
     - inputName: DS_PROMETHEUS
@@ -28,7 +28,7 @@ spec:
           }
         ]
       },
-      "description": "Camel Metrics dashboard",
+      "description": "Camel Integration",
       "editable": true,
       "fiscalYearStartMonth": 0,
       "graphTooltip": 1,
@@ -54,13 +54,15 @@ spec:
           "fieldConfig": {
             "defaults": {
               "color": {
-                "mode": "thresholds"
+                "fixedColor": "green",
+                "mode": "fixed"
               },
               "mappings": [
                 {
                   "options": {
                     "match": "null",
                     "result": {
+                      "index": 0,
                       "text": "N/A"
                     }
                   },
@@ -95,7 +97,7 @@ spec:
             "orientation": "horizontal",
             "reduceOptions": {
               "calcs": [
-                "lastNotNull"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -155,7 +157,7 @@ spec:
           },
           "gridPos": {
             "h": 6,
-            "w": 4,
+            "w": 5,
             "x": 4,
             "y": 1
           },
@@ -167,7 +169,7 @@ spec:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "lastNotNull"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -180,7 +182,7 @@ spec:
           "pluginVersion": "10.4.3",
           "targets": [
             {
-              "datasource": "${DS_PROMETHEUS}",
+              "datasource": "Prometheus",
               "editorMode": "code",
               "expr": "base_cpu_availableProcessors{job=\"$job\", pod=\"$pod\"}",
               "hide": false,
@@ -192,8 +194,8 @@ spec:
             {
               "datasource": "Prometheus",
               "disableTextWrap": false,
-              "editorMode": "builder",
-              "expr": "sum(kube_pod_container_resource_limits{resource=\"cpu\", pod=\"$pod\"})",
+              "editorMode": "code",
+              "expr": "kube_pod_container_resource_limits{resource=\"cpu\", pod=\"$pod\"}",
               "fullMetaSearch": false,
               "hide": false,
               "includeNullMetadata": true,
@@ -208,7 +210,7 @@ spec:
           "type": "stat"
         },
         {
-          "datasource": "Prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Memory limits set for the pod",
           "fieldConfig": {
             "defaults": {
@@ -235,7 +237,7 @@ spec:
           "gridPos": {
             "h": 6,
             "w": 4,
-            "x": 8,
+            "x": 9,
             "y": 1
           },
           "id": 25,
@@ -246,7 +248,7 @@ spec:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "lastNotNull"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -261,7 +263,7 @@ spec:
               "datasource": "Prometheus",
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "sum(kube_pod_container_resource_limits{resource=\"memory\", pod=\"$pod\"})",
+              "expr": "kube_pod_container_resource_limits{resource=\"memory\", pod=\"$pod\"}",
               "fullMetaSearch": false,
               "hide": false,
               "includeNullMetadata": true,
@@ -276,7 +278,7 @@ spec:
           "type": "stat"
         },
         {
-          "datasource": "${DS_PROMETHEUS}",
+          "datasource": "Prometheus",
           "description": "CPU currently being used by Camel.",
           "fieldConfig": {
             "defaults": {
@@ -285,7 +287,19 @@ spec:
                 "mode": "thresholds"
               },
               "decimals": 2,
-              "mappings": [],
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
               "max": 1,
               "min": 0,
               "thresholds": {
@@ -312,7 +326,7 @@ spec:
           "gridPos": {
             "h": 6,
             "w": 5,
-            "x": 12,
+            "x": 13,
             "y": 1
           },
           "id": 30,
@@ -322,7 +336,7 @@ spec:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "lastNotNull"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -353,7 +367,7 @@ spec:
           "type": "gauge"
         },
         {
-          "datasource": "Prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Memory HEAP currently being used by Camel.",
           "fieldConfig": {
             "defaults": {
@@ -361,7 +375,19 @@ spec:
                 "mode": "thresholds"
               },
               "decimals": 2,
-              "mappings": [],
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
               "max": 100,
               "min": 0,
               "thresholds": {
@@ -388,7 +414,7 @@ spec:
           "gridPos": {
             "h": 6,
             "w": 5,
-            "x": 17,
+            "x": 18,
             "y": 1
           },
           "id": 8,
@@ -398,7 +424,7 @@ spec:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "mean"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -414,7 +440,7 @@ spec:
               "disableTextWrap": false,
               "editorMode": "code",
               "exemplar": true,
-              "expr": "(sum(base_memory_usedHeap_bytes{job=\"$job\", pod=\"$pod\"}) * 100) / sum(base_memory_maxHeap_bytes{job=\"$job\", pod=\"$pod\"})",
+              "expr": "(base_memory_usedHeap_bytes{job=\"$job\", pod=\"$pod\"} * 100) / base_memory_maxHeap_bytes{job=\"$job\", pod=\"$pod\"}",
               "format": "time_series",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
@@ -440,142 +466,6 @@ spec:
           "panels": [
             {
               "datasource": "Prometheus",
-              "description": "Pod memory usage by Camel",
-              "fieldConfig": {
-                "defaults": {
-                  "color": {
-                    "mode": "palette-classic"
-                  },
-                  "custom": {
-                    "axisBorderShow": false,
-                    "axisCenteredZero": false,
-                    "axisColorMode": "text",
-                    "axisLabel": "",
-                    "axisPlacement": "auto",
-                    "barAlignment": 0,
-                    "drawStyle": "line",
-                    "fillOpacity": 12,
-                    "gradientMode": "none",
-                    "hideFrom": {
-                      "legend": false,
-                      "tooltip": false,
-                      "viz": false
-                    },
-                    "insertNulls": false,
-                    "lineInterpolation": "linear",
-                    "lineWidth": 1,
-                    "pointSize": 5,
-                    "scaleDistribution": {
-                      "type": "linear"
-                    },
-                    "showPoints": "auto",
-                    "spanNulls": false,
-                    "stacking": {
-                      "group": "A",
-                      "mode": "none"
-                    },
-                    "thresholdsStyle": {
-                      "mode": "off"
-                    }
-                  },
-                  "mappings": [],
-                  "min": 0,
-                  "thresholds": {
-                    "mode": "absolute",
-                    "steps": [
-                      {
-                        "color": "green",
-                        "value": null
-                      },
-                      {
-                        "color": "red",
-                        "value": 80
-                      }
-                    ]
-                  },
-                  "unit": "bytes"
-                },
-                "overrides": []
-              },
-              "gridPos": {
-                "h": 6,
-                "w": 9,
-                "x": 0,
-                "y": 8
-              },
-              "id": 26,
-              "options": {
-                "legend": {
-                  "calcs": [],
-                  "displayMode": "list",
-                  "placement": "bottom",
-                  "showLegend": true
-                },
-                "tooltip": {
-                  "mode": "multi",
-                  "sort": "none"
-                }
-              },
-              "targets": [
-                {
-                  "datasource": "Prometheus",
-                  "editorMode": "code",
-                  "expr": "sum(kube_pod_container_resource_requests{resource=\"memory\", pod=\"$pod\"})",
-                  "hide": false,
-                  "instant": false,
-                  "legendFormat": "Memory Requests",
-                  "range": true,
-                  "refId": "B"
-                },
-                {
-                  "datasource": "Prometheus",
-                  "disableTextWrap": false,
-                  "editorMode": "code",
-                  "expr": "sum(container_memory_rss{container=\"integration\", pod=\"$pod\"})",
-                  "fullMetaSearch": false,
-                  "includeNullMetadata": true,
-                  "instant": false,
-                  "legendFormat": "Pod RSS",
-                  "range": true,
-                  "refId": "A",
-                  "useBackend": false
-                },
-                {
-                  "datasource": "Prometheus",
-                  "editorMode": "code",
-                  "expr": "sum(kube_pod_container_resource_limits{resource=\"memory\", pod=\"$pod\"})",
-                  "hide": false,
-                  "instant": false,
-                  "legendFormat": "Memory Limits",
-                  "range": true,
-                  "refId": "C"
-                },
-                {
-                  "datasource": "Prometheus",
-                  "editorMode": "code",
-                  "expr": "sum(base_memory_committedHeap_bytes{job=\"$job\", pod=\"$pod\"})",
-                  "hide": false,
-                  "instant": false,
-                  "legendFormat": "JVM HEAP Committed",
-                  "range": true,
-                  "refId": "D"
-                },
-                {
-                  "datasource": "Prometheus",
-                  "editorMode": "code",
-                  "expr": "sum(base_memory_maxHeap_bytes{job=\"$job\", pod=\"$pod\"})",
-                  "hide": false,
-                  "instant": false,
-                  "legendFormat": "JVM HEAP Max",
-                  "range": true,
-                  "refId": "E"
-                }
-              ],
-              "title": "Pod Memory Usage",
-              "type": "timeseries"
-            },
-            {
-              "datasource": "${DS_PROMETHEUS}",
               "description": "Displays the \"recent cpu usage\" for the Camel integration.",
               "fieldConfig": {
                 "defaults": {
@@ -615,7 +505,6 @@ spec:
                     }
                   },
                   "mappings": [],
-                  "max": 1,
                   "min": 0,
                   "thresholds": {
                     "mode": "percentage",
@@ -640,8 +529,8 @@ spec:
               },
               "gridPos": {
                 "h": 6,
-                "w": 7,
-                "x": 9,
+                "w": 9,
+                "x": 0,
                 "y": 8
               },
               "id": 22,
@@ -738,7 +627,7 @@ spec:
               "gridPos": {
                 "h": 6,
                 "w": 7,
-                "x": 16,
+                "x": 9,
                 "y": 8
               },
               "id": 19,
@@ -760,7 +649,7 @@ spec:
                   "datasource": "Prometheus",
                   "disableTextWrap": false,
                   "editorMode": "code",
-                  "expr": "sum(base_thread_count{job=\"$job\", pod=\"$pod\"})",
+                  "expr": "base_thread_count{job=\"$job\", pod=\"$pod\"}",
                   "format": "time_series",
                   "fullMetaSearch": false,
                   "includeNullMetadata": true,
@@ -775,7 +664,7 @@ spec:
                   "datasource": "Prometheus",
                   "disableTextWrap": false,
                   "editorMode": "code",
-                  "expr": "sum(base_thread_daemon_count{job=\"$job\", pod=\"$pod\"})",
+                  "expr": "base_thread_daemon_count{job=\"$job\", pod=\"$pod\"}",
                   "format": "time_series",
                   "fullMetaSearch": false,
                   "includeNullMetadata": true,
@@ -789,7 +678,7 @@ spec:
                   "datasource": "Prometheus",
                   "disableTextWrap": false,
                   "editorMode": "code",
-                  "expr": "sum(base_thread_max_count{job=\"$job\", pod=\"$pod\"})",
+                  "expr": "base_thread_max_count{job=\"$job\", pod=\"$pod\"}",
                   "format": "time_series",
                   "fullMetaSearch": false,
                   "includeNullMetadata": true,
@@ -804,8 +693,8 @@ spec:
               "type": "timeseries"
             },
             {
-              "datasource": "Prometheus",
-              "description": "JVM Memory HEAP used by Camel",
+              "datasource": "${DS_PROMETHEUS}",
+              "description": "Calculates the number of GC Events that occurred over a period of 30 minutes (increase/how many more)",
               "fieldConfig": {
                 "defaults": {
                   "color": {
@@ -858,17 +747,17 @@ spec:
                       }
                     ]
                   },
-                  "unit": "bytes"
+                  "unit": "short"
                 },
                 "overrides": []
               },
               "gridPos": {
                 "h": 6,
                 "w": 7,
-                "x": 0,
-                "y": 14
+                "x": 16,
+                "y": 8
               },
-              "id": 11,
+              "id": 27,
               "options": {
                 "legend": {
                   "calcs": [],
@@ -886,40 +775,156 @@ spec:
                 {
                   "datasource": "Prometheus",
                   "editorMode": "code",
-                  "expr": "sum(base_memory_committedHeap_bytes{job=\"$job\", pod=\"$pod\"})",
+                  "expr": "sum(increase(base_gc_total{job=\"$job\", pod=\"$pod\"}[30m])) by (name)",
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "committed",
+                  "legendFormat": "GC Events ({{name}}) / 30m",
                   "range": true,
                   "refId": "A"
+                }
+              ],
+              "title": "Number of GC Events [30m]",
+              "type": "timeseries"
+            },
+            {
+              "datasource": "${DS_PROMETHEUS}",
+              "description": "Pod memory usage by Camel",
+              "fieldConfig": {
+                "defaults": {
+                  "color": {
+                    "mode": "palette-classic"
+                  },
+                  "custom": {
+                    "axisBorderShow": false,
+                    "axisCenteredZero": false,
+                    "axisColorMode": "text",
+                    "axisLabel": "",
+                    "axisPlacement": "auto",
+                    "barAlignment": 0,
+                    "drawStyle": "line",
+                    "fillOpacity": 12,
+                    "gradientMode": "none",
+                    "hideFrom": {
+                      "legend": false,
+                      "tooltip": false,
+                      "viz": false
+                    },
+                    "insertNulls": false,
+                    "lineInterpolation": "linear",
+                    "lineWidth": 1,
+                    "pointSize": 5,
+                    "scaleDistribution": {
+                      "type": "linear"
+                    },
+                    "showPoints": "auto",
+                    "spanNulls": false,
+                    "stacking": {
+                      "group": "A",
+                      "mode": "none"
+                    },
+                    "thresholdsStyle": {
+                      "mode": "off"
+                    }
+                  },
+                  "mappings": [],
+                  "min": 0,
+                  "thresholds": {
+                    "mode": "absolute",
+                    "steps": [
+                      {
+                        "color": "green",
+                        "value": null
+                      },
+                      {
+                        "color": "red",
+                        "value": 80
+                      }
+                    ]
+                  },
+                  "unit": "bytes"
                 },
+                "overrides": []
+              },
+              "gridPos": {
+                "h": 6,
+                "w": 9,
+                "x": 0,
+                "y": 14
+              },
+              "id": 26,
+              "options": {
+                "legend": {
+                  "calcs": [],
+                  "displayMode": "list",
+                  "placement": "bottom",
+                  "showLegend": true
+                },
+                "tooltip": {
+                  "mode": "multi",
+                  "sort": "none"
+                }
+              },
+              "targets": [
                 {
                   "datasource": "Prometheus",
                   "editorMode": "code",
-                  "expr": "sum(base_memory_usedHeap_bytes{job=\"$job\", pod=\"$pod\"})",
-                  "format": "time_series",
-                  "intervalFactor": 1,
-                  "legendFormat": "used",
+                  "expr": "kube_pod_container_resource_requests{resource=\"memory\", pod=\"$pod\"}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "Memory Requests",
                   "range": true,
                   "refId": "B"
                 },
                 {
                   "datasource": "Prometheus",
+                  "disableTextWrap": false,
                   "editorMode": "code",
-                  "expr": "sum(base_memory_maxHeap_bytes{job=\"$job\", pod=\"$pod\"})",
-                  "format": "time_series",
-                  "intervalFactor": 1,
-                  "legendFormat": "max",
+                  "expr": "max(container_memory_rss{pod=\"$pod\"})",
+                  "fullMetaSearch": false,
+                  "includeNullMetadata": true,
+                  "instant": false,
+                  "legendFormat": "Pod RSS",
+                  "range": true,
+                  "refId": "A",
+                  "useBackend": false
+                },
+                {
+                  "datasource": "Prometheus",
+                  "editorMode": "code",
+                  "expr": "kube_pod_container_resource_limits{resource=\"memory\", pod=\"$pod\"}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "Memory Limits",
                   "range": true,
                   "refId": "C"
+                },
+                {
+                  "datasource": "Prometheus",
+                  "editorMode": "code",
+                  "expr": "base_memory_committedHeap_bytes{job=\"$job\", pod=\"$pod\"}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "JVM HEAP Committed",
+                  "range": true,
+                  "refId": "D"
+                },
+                {
+                  "datasource": "Prometheus",
+                  "editorMode": "code",
+                  "expr": "base_memory_maxHeap_bytes{job=\"$job\", pod=\"$pod\"}",
+                  "hide": false,
+                  "instant": false,
+                  "legendFormat": "JVM HEAP Max",
+                  "range": true,
+                  "refId": "E"
                 }
               ],
-              "title": "JVM Memory HEAP Usage",
+              "title": "Pod Memory Usage",
               "type": "timeseries"
             },
             {
-              "datasource": "Prometheus",
+              "datasource": "${DS_PROMETHEUS}",
               "description": "JVM Memory used by Camel",
               "fieldConfig": {
                 "defaults": {
@@ -980,7 +985,7 @@ spec:
               "gridPos": {
                 "h": 6,
                 "w": 7,
-                "x": 7,
+                "x": 9,
                 "y": 14
               },
               "id": 24,
@@ -1001,7 +1006,7 @@ spec:
                 {
                   "datasource": "Prometheus",
                   "editorMode": "code",
-                  "expr": "sum(base_memory_usedHeap_bytes{job=\"$job\", pod=\"$pod\"})",
+                  "expr": "base_memory_usedHeap_bytes{job=\"$job\", pod=\"$pod\"}",
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
@@ -1012,7 +1017,7 @@ spec:
                 {
                   "datasource": "Prometheus",
                   "editorMode": "code",
-                  "expr": "sum(vendor_memory_usedNonHeap_bytes{job=\"$job\", pod=\"$pod\"})",
+                  "expr": "vendor_memory_usedNonHeap_bytes{job=\"$job\", pod=\"$pod\"}",
                   "format": "time_series",
                   "intervalFactor": 1,
                   "legendFormat": "JVM Non Heap",
@@ -1024,8 +1029,8 @@ spec:
               "type": "timeseries"
             },
             {
-              "datasource": "Prometheus",
-              "description": "Calculates the number of GC Collections that occurred over a period of 30 minutes (increase/how many more)",
+              "datasource": "${DS_PROMETHEUS}",
+              "description": "JVM Memory HEAP used by Camel",
               "fieldConfig": {
                 "defaults": {
                   "color": {
@@ -1078,17 +1083,17 @@ spec:
                       }
                     ]
                   },
-                  "unit": "short"
+                  "unit": "bytes"
                 },
                 "overrides": []
               },
               "gridPos": {
                 "h": 6,
-                "w": 9,
-                "x": 14,
+                "w": 7,
+                "x": 16,
                 "y": 14
               },
-              "id": 27,
+              "id": 11,
               "options": {
                 "legend": {
                   "calcs": [],
@@ -1106,16 +1111,36 @@ spec:
                 {
                   "datasource": "Prometheus",
                   "editorMode": "code",
-                  "expr": "sum(increase(base_gc_total{job=\"$job\", pod=\"$pod\"}[30m]))",
+                  "expr": "base_memory_committedHeap_bytes{job=\"$job\", pod=\"$pod\"}",
                   "format": "time_series",
                   "interval": "",
                   "intervalFactor": 1,
-                  "legendFormat": "GC Collections / 30m",
+                  "legendFormat": "committed",
                   "range": true,
                   "refId": "A"
+                },
+                {
+                  "datasource": "Prometheus",
+                  "editorMode": "code",
+                  "expr": "base_memory_usedHeap_bytes{job=\"$job\", pod=\"$pod\"}",
+                  "format": "time_series",
+                  "intervalFactor": 1,
+                  "legendFormat": "used",
+                  "range": true,
+                  "refId": "B"
+                },
+                {
+                  "datasource": "Prometheus",
+                  "editorMode": "code",
+                  "expr": "base_memory_maxHeap_bytes{job=\"$job\", pod=\"$pod\"}",
+                  "format": "time_series",
+                  "intervalFactor": 1,
+                  "legendFormat": "max",
+                  "range": true,
+                  "refId": "C"
                 }
               ],
-              "title": "Number of GC Collections [30m]",
+              "title": "JVM Memory HEAP Usage",
               "type": "timeseries"
             }
           ],
@@ -1136,7 +1161,7 @@ spec:
           "type": "row"
         },
         {
-          "datasource": "Prometheus",
+          "datasource": "${DS_PROMETHEUS}",
           "description": "Monitors the successful completion rate of exchanges in the Camel integration by providing the percentage of successfully completed exchanges out of the total exchanges.",
           "fieldConfig": {
             "defaults": {
@@ -1145,7 +1170,19 @@ spec:
                 "mode": "fixed"
               },
               "fieldMinMax": false,
-              "mappings": [],
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
               "min": 0,
               "thresholds": {
                 "mode": "percentage",
@@ -1170,7 +1207,7 @@ spec:
           },
           "gridPos": {
             "h": 6,
-            "w": 5,
+            "w": 4,
             "x": 0,
             "y": 9
           },
@@ -1182,7 +1219,7 @@ spec:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "mean"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -1197,7 +1234,7 @@ spec:
               "datasource": "Prometheus",
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "(sum(application_camel_context_exchanges_completed_total{job=\"$job\", pod=\"$pod\"})*100) / sum(application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"})",
+              "expr": "(application_camel_context_exchanges_completed_total{job=\"$job\", pod=\"$pod\"} * 100) / application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"}",
               "format": "time_series",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
@@ -1212,13 +1249,25 @@ spec:
         },
         {
           "datasource": "${DS_PROMETHEUS}",
-          "description": "Monitors the failure rate of exchanges in the Camel integration by providing the percentage of failed exchanges out of the total exchanges.",
+          "description": "Monitors the failure rate of exchanges in a Camel integration by providing the percentage of failed exchanges out of the total exchanges.",
           "fieldConfig": {
             "defaults": {
               "color": {
                 "mode": "thresholds"
               },
-              "mappings": [],
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
               "max": 100,
               "min": 0,
               "thresholds": {
@@ -1244,8 +1293,8 @@ spec:
           },
           "gridPos": {
             "h": 6,
-            "w": 5,
-            "x": 5,
+            "w": 4,
+            "x": 4,
             "y": 9
           },
           "id": 29,
@@ -1256,7 +1305,7 @@ spec:
             "orientation": "auto",
             "reduceOptions": {
               "calcs": [
-                "mean"
+                "last"
               ],
               "fields": "",
               "values": false
@@ -1271,7 +1320,7 @@ spec:
               "datasource": "Prometheus",
               "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "(sum(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"})*100) / sum(application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"})",
+              "expr": "(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"} * 100) / application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"}",
               "format": "time_series",
               "fullMetaSearch": false,
               "includeNullMetadata": true,
@@ -1285,8 +1334,345 @@ spec:
           "type": "stat"
         },
         {
-          "datasource": "Prometheus",
-          "description": "Calculates the number of Camel Failures & Redeliveries that occurred over a period of 5 minutes (increase/how many more)",
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Number of exchanges that are currently being processed and have not yet completed within the Camel integration",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "thresholds"
+              },
+              "decimals": 0,
+              "fieldMinMax": false,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "text",
+                    "value": null
+                  },
+                  {
+                    "color": "#EAB839",
+                    "value": 1
+                  }
+                ]
+              },
+              "unit": "short"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 3,
+            "x": 8,
+            "y": 9
+          },
+          "id": 33,
+          "options": {
+            "colorMode": "value",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.3",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "disableTextWrap": false,
+              "editorMode": "builder",
+              "expr": "application_camel_context_exchanges_inflight_count{job=\"$job\", pod=\"$pod\"}",
+              "format": "time_series",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "intervalFactor": 1,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Exchanges inflight",
+          "type": "stat"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Minimum amount of time taken to process an exchange within the Camel integration",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "thresholds"
+              },
+              "fieldMinMax": false,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 11,
+            "y": 9
+          },
+          "id": 34,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.3",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "application_camel_exchange_processing_min_seconds{job=\"$job\", pod=\"$pod\"}",
+              "format": "time_series",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "intervalFactor": 1,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Min processing time",
+          "type": "stat"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Average amount of time taken to process an exchange within the Camel integration",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "thresholds"
+              },
+              "fieldMinMax": false,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 15,
+            "y": 9
+          },
+          "id": 35,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.3",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "application_camel_exchange_processing_mean_seconds{job=\"$job\", pod=\"$pod\"}",
+              "format": "time_series",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "intervalFactor": 1,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Mean processing time",
+          "type": "stat"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Maximum amount of time taken to process an exchange within the Camel integration",
+          "fieldConfig": {
+            "defaults": {
+              "color": {
+                "fixedColor": "green",
+                "mode": "thresholds"
+              },
+              "fieldMinMax": false,
+              "mappings": [
+                {
+                  "options": {
+                    "match": "null+nan",
+                    "result": {
+                      "color": "text",
+                      "index": 0,
+                      "text": "N/A"
+                    }
+                  },
+                  "type": "special"
+                }
+              ],
+              "min": 0,
+              "thresholds": {
+                "mode": "absolute",
+                "steps": [
+                  {
+                    "color": "green",
+                    "value": null
+                  },
+                  {
+                    "color": "red",
+                    "value": 80
+                  }
+                ]
+              },
+              "unit": "s"
+            },
+            "overrides": []
+          },
+          "gridPos": {
+            "h": 6,
+            "w": 4,
+            "x": 19,
+            "y": 9
+          },
+          "id": 36,
+          "options": {
+            "colorMode": "none",
+            "graphMode": "none",
+            "justifyMode": "auto",
+            "orientation": "auto",
+            "reduceOptions": {
+              "calcs": [
+                "last"
+              ],
+              "fields": "",
+              "values": false
+            },
+            "showPercentChange": false,
+            "textMode": "auto",
+            "wideLayout": true
+          },
+          "pluginVersion": "10.4.3",
+          "targets": [
+            {
+              "datasource": "Prometheus",
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "application_camel_exchange_processing_max_seconds{job=\"$job\", pod=\"$pod\"}",
+              "format": "time_series",
+              "fullMetaSearch": false,
+              "includeNullMetadata": true,
+              "intervalFactor": 1,
+              "legendFormat": "__auto",
+              "range": true,
+              "refId": "A",
+              "useBackend": false
+            }
+          ],
+          "title": "Max processing time",
+          "type": "stat"
+        },
+        {
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Calculates the average rate of Camel Exchanges per second over a period of 5 minutesx",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1325,7 +1711,7 @@ spec:
                 }
               },
               "mappings": [],
-              "min": 21,
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1339,17 +1725,17 @@ spec:
                   }
                 ]
               },
-              "unit": "none"
+              "unit": "short"
             },
             "overrides": []
           },
           "gridPos": {
             "h": 6,
-            "w": 13,
-            "x": 10,
-            "y": 9
+            "w": 11,
+            "x": 0,
+            "y": 15
           },
-          "id": 14,
+          "id": 13,
           "options": {
             "legend": {
               "calcs": [],
@@ -1366,49 +1752,51 @@ spec:
           "targets": [
             {
               "datasource": "Prometheus",
-              "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "sum(increase(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"}[5m]))",
-              "fullMetaSearch": false,
-              "hide": false,
-              "includeNullMetadata": true,
-              "instant": false,
-              "legendFormat": "Failed exchanges / 5m",
-              "range": true,
-              "refId": "A",
-              "useBackend": false
-            },
-            {
-              "datasource": "Prometheus",
-              "disableTextWrap": false,
-              "editorMode": "code",
-              "expr": "sum(increase(application_camel_context_failuresHandled_total{job=\"$job\", pod=\"$pod\"}[5m]))",
-              "fullMetaSearch": false,
-              "hide": false,
-              "includeNullMetadata": true,
-              "instant": false,
-              "legendFormat": "Handled failures / 5m",
-              "range": true,
-              "refId": "B",
-              "useBackend": false
-            },
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum(increase(application_camel_context_externalRedeliveries_total{job=\"$job\", pod=\"$pod\"}[5m]))",
+              "expr": "rate(application_camel_context_exchanges_completed_total{job=\"$job\", pod=\"$pod\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "External redeliveries / 5m",
+              "legendFormat": "Exchanges Completed / sec",
+              "range": true,
+              "refId": "A"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "rate(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"}[5m])",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Exchanges Failed / sec",
+              "range": true,
+              "refId": "B"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "rate(application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"}[5m])",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Exchanges Total / sec",
               "range": true,
               "refId": "C"
+            },
+            {
+              "datasource": "Prometheus",
+              "editorMode": "code",
+              "expr": "application_camel_context_exchanges_inflight_count{job=\"$job\", pod=\"$pod\"}",
+              "format": "time_series",
+              "intervalFactor": 1,
+              "legendFormat": "Exchanges Inflight",
+              "range": true,
+              "refId": "D"
             }
           ],
-          "title": "Number of Camel Failures & Redeliveries [5m]",
+          "title": "Camel Exchanges per second [5m]",
           "type": "timeseries"
         },
         {
-          "datasource": "Prometheus",
-          "description": "Camel Processing Time",
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Amount of time taken to process an exchange within the Camel integration",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1466,9 +1854,9 @@ spec:
             "overrides": []
           },
           "gridPos": {
-            "h": 6,
-            "w": 10,
-            "x": 0,
+            "h": 12,
+            "w": 12,
+            "x": 11,
             "y": 15
           },
           "id": 15,
@@ -1489,7 +1877,7 @@ spec:
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(application_camel_exchange_processing_max_seconds{job=\"$job\", pod=\"$pod\"})",
+              "expr": "application_camel_exchange_processing_max_seconds{job=\"$job\", pod=\"$pod\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max Processing Time",
@@ -1499,7 +1887,7 @@ spec:
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(application_camel_exchange_processing_min_seconds{job=\"$job\", pod=\"$pod\"})",
+              "expr": "application_camel_exchange_processing_min_seconds{job=\"$job\", pod=\"$pod\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Min Processing Time",
@@ -1509,7 +1897,7 @@ spec:
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(application_camel_exchange_processing_mean_seconds{job=\"$job\", pod=\"$pod\"})",
+              "expr": "application_camel_exchange_processing_mean_seconds{job=\"$job\", pod=\"$pod\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Mean Processing Time",
@@ -1521,8 +1909,8 @@ spec:
           "type": "timeseries"
         },
         {
-          "datasource": "Prometheus",
-          "description": "Calculates the average rate of Camel Exchanges per second over a period of 5 minutes",
+          "datasource": "${DS_PROMETHEUS}",
+          "description": "Calculates the average rate of Camel Failures & Redeliveries per second over a period of 5 minutes",
           "fieldConfig": {
             "defaults": {
               "color": {
@@ -1561,6 +1949,7 @@ spec:
                 }
               },
               "mappings": [],
+              "min": 0,
               "thresholds": {
                 "mode": "absolute",
                 "steps": [
@@ -1580,11 +1969,11 @@ spec:
           },
           "gridPos": {
             "h": 6,
-            "w": 13,
-            "x": 10,
-            "y": 15
+            "w": 11,
+            "x": 0,
+            "y": 21
           },
-          "id": 13,
+          "id": 14,
           "options": {
             "legend": {
               "calcs": [],
@@ -1601,46 +1990,44 @@ spec:
           "targets": [
             {
               "datasource": "Prometheus",
+              "disableTextWrap": false,
               "editorMode": "code",
-              "expr": "sum(rate(application_camel_context_exchanges_completed_total{job=\"$job\", pod=\"$pod\"}[5m]))",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Exchanges Completed / sec",
+              "expr": "rate(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"}[5m])",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "Failed exchanges / sec",
               "range": true,
-              "refId": "A"
+              "refId": "A",
+              "useBackend": false
+            },
+            {
+              "datasource": "Prometheus",
+              "disableTextWrap": false,
+              "editorMode": "code",
+              "expr": "rate(application_camel_context_failuresHandled_total{job=\"$job\", pod=\"$pod\"}[5m])",
+              "fullMetaSearch": false,
+              "hide": false,
+              "includeNullMetadata": true,
+              "instant": false,
+              "legendFormat": "Handled failures / sec",
+              "range": true,
+              "refId": "B",
+              "useBackend": false
             },
             {
               "datasource": "Prometheus",
               "editorMode": "code",
-              "expr": "sum(rate(application_camel_context_exchanges_failed_total{job=\"$job\", pod=\"$pod\"}[5m]))",
+              "expr": "rate(application_camel_context_externalRedeliveries_total{job=\"$job\", pod=\"$pod\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
-              "legendFormat": "Exchanges Failed / sec",
-              "range": true,
-              "refId": "B"
-            },
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum(rate(application_camel_context_exchanges_total{job=\"$job\", pod=\"$pod\"}[5m]))",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Exchanges Total / sec",
+              "legendFormat": "External redeliveries / sec",
               "range": true,
               "refId": "C"
-            },
-            {
-              "datasource": "Prometheus",
-              "editorMode": "code",
-              "expr": "sum(application_camel_context_exchanges_inflight_count{job=\"$job\", pod=\"$pod\"})",
-              "format": "time_series",
-              "intervalFactor": 1,
-              "legendFormat": "Exchanges Inflight",
-              "range": true,
-              "refId": "D"
             }
           ],
-          "title": "Camel Exchanges per second [5m]",
+          "title": "Camel Failures & Redeliveries per second [5m]",
           "type": "timeseries"
         }
       ],
@@ -1661,6 +2048,7 @@ spec:
             "definition": "label_values(application_camel_context_exchanges_total,job)",
             "hide": 0,
             "includeAll": false,
+            "label": "Camel Integration",
             "multi": false,
             "name": "job",
             "options": [],
@@ -1677,7 +2065,7 @@ spec:
           },
           {
             "current": {
-              "selected": true,
+              "selected": false,
               "text": "postgresql-to-mqtt-and-file-77597b4cd5-d9wj9",
               "value": "postgresql-to-mqtt-and-file-77597b4cd5-d9wj9"
             },
@@ -1735,8 +2123,8 @@ spec:
         ]
       },
       "timezone": "",
-      "title": "Camel Pod Metrics",
+      "title": "Camel Integration Metrics",
       "uid": "bIx0BxeZk",
-      "version": 2,
+      "version": 1,
       "weekStart": ""
     }
