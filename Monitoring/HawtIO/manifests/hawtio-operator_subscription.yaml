@@ -2,17 +2,17 @@
 apiVersion: operators.coreos.com/v1
 kind: OperatorGroup
 metadata:
-  name: camel-k-integrations-operatorgroup
-  namespace: camel-k-integrations
+  name: observability-operatorgroup
+  namespace: observability
 spec:
   targetNamespaces:
-  - camel-k-integrations
+  - observability
 ---
 apiVersion: operators.coreos.com/v1alpha1
 kind: Subscription
 metadata:
   name: red-hat-hawtio-operator
-  namespace: camel-k-integrations
+  namespace: observability
 spec:
   channel: stable-v1
   installPlanApproval: Automatic

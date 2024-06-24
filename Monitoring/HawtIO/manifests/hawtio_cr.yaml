@@ -14,4 +14,7 @@ spec:
     requests:
       cpu: 200m
       memory: 32Mi
-  type: Namespace
+  # The deployment type. Defaults to Cluster.
+  # Cluster: Hawtio is capable of discovering and managing applications across all namespaces the authenticated user has access to. 
+  # Namespace: Hawtio is capable of discovering and managing applications within the deployment namespace.
+  type: Cluster
