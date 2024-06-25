@@ -310,7 +310,7 @@ spec:
                 },
                 {
                     "datasource": "Prometheus",
-                    "description": "Average amount of time taken to process the route within the Camel integration",
+                    "description": "Average amount of time taken to process messages within the Camel route",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -391,7 +391,7 @@ spec:
                 },
                 {
                     "datasource": "Prometheus",
-                    "description": "Maximum amount of time taken to process the route within the Camel integration",
+                    "description": "Maximum amount of time taken to process messages within the Camel route",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
@@ -574,7 +574,7 @@ spec:
                 },
                 {
                     "datasource": "${DS_PROMETHEUS}",
-                    "description": "Evolution of the amount of time taken to process the route within the Camel integration",
+                    "description": "Evolution of the amount of time taken to process messages within the Camel route",
                     "fieldConfig": {
                         "defaults": {
                             "color": {
