@@ -60,8 +60,9 @@ spec:
                             "mappings": [
                                 {
                                     "options": {
-                                        "match": "null",
+                                        "match": "null+nan",
                                         "result": {
+                                            "color": "text",
                                             "index": 0,
                                             "text": "N/A"
                                         }
@@ -139,8 +140,9 @@ spec:
                             "mappings": [
                                 {
                                     "options": {
-                                        "match": "null",
+                                        "match": "null+nan",
                                         "result": {
+                                            "color": "text",
                                             "index": 0,
                                             "text": "N/A"
                                         }
