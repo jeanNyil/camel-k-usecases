@@ -2,7 +2,7 @@
 
 # Deploy grafana operator using OLM
 oc apply -f ./manifests/grafana-operator_subscription.yaml
-sleep 10
+sleep 30
 oc wait --for=condition=available --timeout=600s deployment/grafana-oauth-deployment
 
 # Deploy grafana instance

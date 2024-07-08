@@ -1,131 +1,143 @@
-# camel-k: language=yaml dependency=mvn:org.postgresql:postgresql:42.7.3
 - route:
     id: sql-to-mqtt-and-file
     from:
       id: from-1352
       description: Fetch transactions
-      uri: sql:SELECT * FROM transactions
+      uri: sql
       parameters:
         dataSource: "#PostgresqlDataSource"
         noop: false
         outputType: SelectList
         repeatCount: "0"
         useIterator: true
+        query: SELECT * FROM transactions
       steps:
         - to:
             id: to-3718
-            uri: log:sql
+            uri: log
             parameters:
               multiline: true
               showAll: true
+              loggerName: sql
         - setHeader:
             id: setHeader-3753
             description: Extract Id
+            name: id
             expression:
               simple:
+                id: simple-0756
                 expression: ${body[id]}
-            name: id
         - doTry:
             id: doTry-1602
-            steps:
-              - transform:
-                  id: transform-1804
-                  description: Generate JSON
-                  expression:
-                    simple:
-                      expression: '{ "id": ${body[id]}, "timestamp": "${body[timestamp]}",
-                        "accountnumber": "${body[accountnumber]}", "amount":
-                        ${body[amount]} }'
-                      trim: true
-              - log:
-                  id: log-1967
-                  message: Generated JSON for record [${header.id}] => ${body}
-              - multicast:
-                  id: multicast-2720
-                  steps:
-                    - to:
-                        id: to-7135
-                        description: Call write-to-file
-                        uri: direct:write-to-file
-                        parameters: {}
-                    - to:
-                        id: to-4552
-                        description: Call write-to-mqtt
-                        uri: direct:write-to-mqtt
-                        parameters: {}
-                  parallelProcessing: true
             doCatch:
               - id: doCatch-3854
+                exception:
+                  - java.lang.Exception
                 steps:
                   - log:
                       id: log-8499
                       description: Log Exception
-                      loggingLevel: ERROR
                       message: "Caught error: ${exception.message}"
-                exception:
-                  - java.lang.Exception
+                      loggingLevel: ERROR
             doFinally:
               id: doFinally-3854
               steps:
                 - to:
                     id: to-1624
                     description: Delete record
-                    uri: sql:delete from transactions where id = :#${header.id}
+                    uri: sql
                     parameters:
                       dataSource: "#PostgresqlDataSource"
+                      query: delete from transactions where id = :#${header.id}
                 - log:
                     id: log-3610
                     message: Record [${header.id}] has been removed from DB.
-- beans:
-    - name: PostgresqlDataSource
-      properties:
-        databaseName: "{{db.name:transactions}}"
-        password: "{{db.password:P@ssw0rd}}"
-        portNumber: "{{db.port:5432}}"
-        serverName: "{{db.host:localhost}}"
-        user: "{{db.user:user}}"
-      type: org.postgresql.ds.PGSimpleDataSource
+            steps:
+              - transform:
+                  id: transform-1804
+                  description: Generate JSON
+                  expression:
+                    simple:
+                      id: simple-cfbd
+                      expression: >-
+                        { "id": ${body[id]}, "timestamp": "${body[timestamp]}",
+                        "accountnumber": "${body[accountnumber]}", "amount":
+                        ${body[amount]} }
+                      trim: true
+              - log:
+                  id: log-1967
+                  message: Generated JSON for record [${header.id}] => ${body}
+              - multicast:
+                  id: multicast-2720
+                  parallelProcessing: true
+                  steps:
+                    - to:
+                        id: to-7135
+                        description: Call write-to-file
+                        uri: direct
+                        parameters:
+                          name: write-to-file
+                    - to:
+                        id: to-4552
+                        description: Call write-to-mqtt
+                        uri: direct
+                        parameters:
+                          name: write-to-mqtt
 - route:
     id: write-to-file
     from:
       id: from-2488
       description: write-to-file
-      uri: direct:write-to-file
-      parameters: {}
+      uri: direct
+      parameters:
+        name: write-to-file
       steps:
         - setHeader:
             id: setHeader-4078
             description: Generate filename
+            name: CamelFileName
             expression:
               simple:
+                id: simple-e2b0
                 expression: ${header.id}_${date:now:yyyyMMddHHmm}.json
                 trim: true
-            name: CamelFileName
         - log:
             id: log-7632
             message: Writing record [${header.id}] to ${header.CamelFileName} file
         - to:
             id: to-1148
-            uri: file:/tmp/db-usecase
-            parameters: {}
+            uri: file
+            parameters:
+              directoryName: /tmp/db-usecase
 - route:
     id: publish-to-mqtt
     from:
       id: from-1057
       description: write-to-mqtt
-      uri: direct:write-to-mqtt
-      parameters: {}
+      uri: direct
+      parameters:
+        name: write-to-mqtt
       steps:
         - log:
             id: log-7320
             message: Publishing record [${header.id}] to DB/JSON MQTT topic
         - to:
             id: to-1474
-            uri: paho-mqtt5:DB/JSON
+            uri: paho-mqtt5
+            pattern: InOnly
             parameters:
-              brokerUrl: "{{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster\
-                .apps.ocp4.jnyilimb.eu:443}}"
+              brokerUrl: >-
+                {{broker.url:ssl://amq-ssl-broker-all-0-svc-rte-amq7-broker-cluster.apps.ocp4.jnyilimb.eu:443}}
               httpsHostnameVerificationEnabled: false
               password: "{{broker.password:P@ssw0rd}}"
               userName: "{{broker.user:postgresql-to-mqtt-and-file}}"
-            pattern: InOnly
+              topic: DB/JSON
+- beans:
+    - name: PostgresqlDataSource
+      type: org.postgresql.ds.PGSimpleDataSource
+      properties:
+        databaseName: "{{db.name:transactions}}"
+        password: "{{db.password:P@ssw0rd}}"
+        portNumber: "{{db.port:5432}}"
+        serverName: "{{db.host:localhost}}"
+        user: "{{db.user:user}}"

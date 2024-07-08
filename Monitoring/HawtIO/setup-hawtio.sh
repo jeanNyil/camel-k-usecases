@@ -2,7 +2,7 @@
 
 # Deploy hawtio operator using OLM
 oc apply -f ./manifests/hawtio-operator_subscription.yaml
-sleep 10
+sleep 30
 oc wait --for=condition=available --timeout=600s deployment/hawtio-operator
 
 # Deploy grafana instance
